@@ -4,14 +4,17 @@ A sample chatbot application demonstrating **Oracle Cloud Infrastructure (OCI) G
 
 ## ✨ Features
 
-- **💬 Interactive Chat Interface**: Both CLI and web-based (Streamlit) interfaces
+- **💬 Multiple Chat Interfaces**: Traditional CLI, Codex-style developer interface, and web-based (Streamlit)
+- **🎯 Codex-Style CLI**: Developer-focused interface with specialized modes (code, debug, explain, review)
 - **🚀 Real-time Streaming**: Stream responses in real-time for faster perceived response time
 - **🔍 Text Embeddings**: Generate embeddings using OCI GenAI embedding models
+- **🎨 Syntax Highlighting**: Automatic code formatting and language detection
 - **🎯 Multiple Models**: Support for various OCI GenAI models (Cohere, Llama, etc.)
 - **⚙️ Configurable Parameters**: Adjust temperature, max tokens, streaming, and system prompts
 - **📝 Conversation History**: Maintains context across chat sessions
 - **🎨 Rich UI**: Beautiful CLI with Rich library and modern Streamlit web interface
 - **🔄 Async Support**: Full async/await support for high-performance applications
+- **🎭 Demo Mode**: Try interfaces without OCI configuration
 
 ## 🏗️ Architecture
 
@@ -85,6 +88,8 @@ chatbot-cli config
 
 ### CLI Interface
 
+#### Traditional Chat Interface
+
 Start an interactive chat session:
 
 ```bash
@@ -100,6 +105,40 @@ chatbot-cli chat --system-prompt "You are a helpful coding assistant" --stream
 # Disable streaming for traditional response style
 chatbot-cli chat --no-stream
 ```
+
+#### Codex-Style Interface (New!)
+
+A clean, developer-focused interface inspired by OpenAI Codex:
+
+```bash
+# Interactive REPL mode
+oci-genai
+
+# With specific mode and model
+oci-genai --mode code --model cohere.command-r-plus
+
+# One-shot command execution
+oci-genai --one-shot "Write a Python function to sort a list" --mode code
+
+# Demo mode (no OCI setup required)
+oci-genai --demo --mode suggest
+```
+
+**Codex Interface Features:**
+- **🎯 Specialized Modes**: `suggest`, `code`, `explain`, `debug`, `review`
+- **📝 Natural Language**: Talk to AI in plain English
+- **⚡ One-shot Commands**: Execute single commands and exit
+- **🎨 Syntax Highlighting**: Automatic code formatting and highlighting
+- **🔄 Mode Switching**: Change AI behavior with `/mode` command
+- **📚 Session History**: Track your conversation with `/history`
+- **🎭 Demo Mode**: Try the interface without OCI setup
+
+**Available Commands:**
+- `/help` - Show help information
+- `/mode [mode]` - Change interaction mode
+- `/reset` - Clear conversation history
+- `/history` - Show session history
+- `/exit` - Exit the session
 
 Generate embeddings:
 
@@ -248,6 +287,7 @@ embedding_response = litellm.embedding(
 
 ### CLI Features
 
+#### Traditional CLI (`chatbot-cli`)
 - **Rich Terminal UI**: Beautiful formatted output with colors and panels
 - **Real-time streaming**: Watch responses appear character by character
 - **Interactive Chat**: Live conversation with real-time streaming or traditional responses
@@ -255,6 +295,16 @@ embedding_response = litellm.embedding(
 - **Connection Testing**: Verify OCI GenAI connectivity
 - **Model Information**: Browse available models and their capabilities
 - **Flexible Modes**: Choose between streaming and non-streaming responses
+
+#### Codex-Style CLI (`oci-genai`)
+- **🎯 Specialized Modes**: Different AI personalities for code, debug, explain, review
+- **📝 Natural Language Interface**: Clean, minimal prompts like OpenAI Codex
+- **🎨 Automatic Syntax Highlighting**: Language detection and code formatting
+- **⚡ One-shot Execution**: Run single commands and exit
+- **📚 Session Management**: Track and review conversation history
+- **🔄 Mode Switching**: Change AI behavior on-the-fly
+- **🎭 Demo Mode**: Experience the interface without OCI setup
+- **🚀 Developer-Focused**: Optimized workflow for coding tasks
 
 ### Streamlit Features
 
