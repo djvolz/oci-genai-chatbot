@@ -2,16 +2,16 @@
 
 A sample chatbot application demonstrating **Oracle Cloud Infrastructure (OCI) GenAI** integration with **LiteLLM**. This project showcases how to use OCI's powerful generative AI models through LiteLLM's unified interface.
 
-## =� Features
+## ✨ Features
 
-- **> Interactive Chat Interface**: Both CLI and web-based (Streamlit) interfaces
-- **=" Text Embeddings**: Generate embeddings using OCI GenAI embedding models
-- **� Multiple Models**: Support for various OCI GenAI models (Cohere, Llama, etc.)
-- **<� Configurable Parameters**: Adjust temperature, max tokens, and system prompts
-- **=� Conversation History**: Maintains context across chat sessions
-- **=� Rich UI**: Beautiful CLI with Rich library and modern Streamlit web interface
+- **💬 Interactive Chat Interface**: Both CLI and web-based (Streamlit) interfaces
+- **🔍 Text Embeddings**: Generate embeddings using OCI GenAI embedding models
+- **🎯 Multiple Models**: Support for various OCI GenAI models (Cohere, Llama, etc.)
+- **⚙️ Configurable Parameters**: Adjust temperature, max tokens, and system prompts
+- **📝 Conversation History**: Maintains context across chat sessions
+- **🎨 Rich UI**: Beautiful CLI with Rich library and modern Streamlit web interface
 
-## <� Architecture
+## 🏗️ Architecture
 
 This application uses a **forked version of LiteLLM** that includes native OCI GenAI support:
 
@@ -19,14 +19,14 @@ This application uses a **forked version of LiteLLM** that includes native OCI G
 - **OCI Provider**: Native `oci_genai` provider integrated into LiteLLM
 - **Authentication**: Uses standard OCI configuration (`~/.oci/config`)
 
-## =� Prerequisites
+## 📋 Prerequisites
 
 1. **OCI Account**: Access to Oracle Cloud Infrastructure
 2. **OCI GenAI Service**: Access to OCI Generative AI service in your region
 3. **OCI Configuration**: Properly configured OCI credentials
 4. **Python**: Python 3.8 or higher
 
-## =� Installation
+## 🚀 Installation
 
 ### Option 1: Using uv (Recommended)
 
@@ -48,7 +48,7 @@ cd oci-genai-chatbot
 pip install -e .
 ```
 
-## � Configuration
+## ⚙️ Configuration
 
 ### 1. OCI Configuration File
 
@@ -79,7 +79,7 @@ Check your configuration:
 chatbot-cli config
 ```
 
-## <� Usage
+## 🖥️ Usage
 
 ### CLI Interface
 
@@ -124,11 +124,11 @@ Then open your browser to `http://localhost:8501`
 
 The web interface provides:
 
-- **=� Chat Tab**: Interactive chatbot with conversation history
-- **=" Embeddings Tab**: Generate and download text embeddings
-- **� Configuration Tab**: View OCI setup status and instructions
+- **💬 Chat Tab**: Interactive chatbot with conversation history
+- **🔍 Embeddings Tab**: Generate and download text embeddings
+- **⚙️ Configuration Tab**: View OCI setup status and instructions
 
-## > Available Models
+## 🤖 Available Models
 
 ### Chat Models
 
@@ -142,7 +142,7 @@ The web interface provides:
 - `cohere.embed-multilingual-v3.0` - Multilingual embedding model (1024 dimensions)
 - `cohere.embed-english-light-v3.0` - Lightweight English embedding model (384 dimensions)
 
-## =' API Usage
+## 📚 API Usage
 
 ### Python API
 
@@ -194,7 +194,7 @@ embedding_response = litellm.embedding(
 )
 ```
 
-## < Features Showcase
+## 🌟 Features Showcase
 
 ### CLI Features
 
@@ -219,7 +219,7 @@ embedding_response = litellm.embedding(
 - **Token Limits**: Control response length
 - **Model Switching**: Easy switching between different OCI GenAI models
 
-## <� OCI GenAI Integration Details
+## 🔧 OCI GenAI Integration Details
 
 This application demonstrates the **native OCI GenAI integration** added to LiteLLM, featuring:
 
@@ -231,15 +231,15 @@ This application demonstrates the **native OCI GenAI integration** added to Lite
 
 ### Supported OCI Features
 
--  **Text Generation**: Chat completion with various models
--  **Embeddings**: Text embedding generation
--  **Streaming**: Real-time response streaming (where supported)
--  **Function Calling**: Tool use capabilities (model-dependent)
--  **System Messages**: System prompt support
--  **Temperature Control**: Response randomness adjustment
--  **Token Limits**: Output length control
+- **💬 Text Generation**: Chat completion with various models
+- **🔍 Embeddings**: Text embedding generation
+- **📡 Streaming**: Real-time response streaming (where supported)
+- **🔧 Function Calling**: Tool use capabilities (model-dependent)
+- **📋 System Messages**: System prompt support
+- **🌡️ Temperature Control**: Response randomness adjustment
+- **📏 Token Limits**: Output length control
 
-## =� Troubleshooting
+## 🛠️ Troubleshooting
 
 ### Common Issues
 
@@ -276,15 +276,15 @@ This application demonstrates the **native OCI GenAI integration** added to Lite
 - Test connection: Use the "Test Connection" button in Streamlit
 - Verify models: `chatbot-cli models`
 
-## =� License
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## > Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## =O Acknowledgments
+## 🙏 Acknowledgments
 
 - **LiteLLM**: Original unified LLM interface
 - **Oracle Cloud Infrastructure**: GenAI service and platform
