@@ -11,7 +11,7 @@ from rich.prompt import Prompt
 from rich.table import Table
 from rich.markdown import Markdown
 
-from .litellm_client import OCIGenAIChatBot, AVAILABLE_CHAT_MODELS, AVAILABLE_EMBEDDING_MODELS
+from oci_genai_chatbot.litellm_client import OCIGenAIChatBot, AVAILABLE_CHAT_MODELS, AVAILABLE_EMBEDDING_MODELS
 
 console = Console()
 
@@ -35,14 +35,17 @@ def main():
               help="System prompt to set context")
 @click.option("--compartment-id", "-c",
               help="OCI compartment ID (defaults to OCI_COMPARTMENT_ID env var)")
-def chat(model, temperature, max_tokens, system_prompt, compartment_id):
+@click.option("--stream/--no-stream", default=True,
+              help="Enable/disable streaming responses")
+def chat(model, temperature, max_tokens, system_prompt, compartment_id, stream):
     """Start an interactive chat session with OCI GenAI."""
     
     console.print(Panel.fit(
         "[bold blue]OCI GenAI Chatbot[/bold blue]\n"
         f"Model: {model}\n"
         f"Temperature: {temperature}\n"
-        f"Max Tokens: {max_tokens}",
+        f"Max Tokens: {max_tokens}\n"
+        f"Streaming: {'🔄 Enabled' if stream else '🚫 Disabled'}",
         title="🤖 Chatbot Configuration"
     ))
     
@@ -62,7 +65,10 @@ def chat(model, temperature, max_tokens, system_prompt, compartment_id):
         
         console.print("\n[dim]Type 'quit', 'exit', or 'bye' to end the conversation[/dim]")
         console.print("[dim]Type 'reset' to clear conversation history[/dim]")
-        console.print("[dim]Type 'history' to view conversation history[/dim]\n")
+        console.print("[dim]Type 'history' to view conversation history[/dim]")
+        if stream:
+            console.print("[dim]Streaming mode: responses will appear in real-time[/dim]")
+        console.print()
         
         while True:
             try:
@@ -86,11 +92,28 @@ def chat(model, temperature, max_tokens, system_prompt, compartment_id):
                     continue
                 
                 # Get bot response
-                with console.status("[bold blue]Thinking...", spinner="dots"):
-                    response = bot.chat(user_input, system_prompt if system_prompt else None)
-                
-                # Display response
-                console.print(f"[bold blue]Bot:[/bold blue] {response}\n")
+                if stream:
+                    # Streaming response
+                    console.print("[bold blue]Bot:[/bold blue] ", end="")
+                    response_generator = bot.chat(user_input, system_prompt if system_prompt else None, stream=True)
+                    
+                    full_response = ""
+                    for chunk in response_generator:
+                        if chunk.startswith("Error:"):
+                            console.print(f"[red]{chunk}[/red]")
+                            break
+                        else:
+                            full_response += chunk
+                            console.print(chunk, end="")
+                    
+                    console.print("\n")  # Add newline after streaming
+                else:
+                    # Non-streaming response
+                    with console.status("[bold blue]Thinking...", spinner="dots"):
+                        response = bot.chat(user_input, system_prompt if system_prompt else None, stream=False)
+                    
+                    # Display response
+                    console.print(f"[bold blue]Bot:[/bold blue] {response}\n")
                 
             except KeyboardInterrupt:
                 console.print("\n\n[yellow]Goodbye! 👋[/yellow]")

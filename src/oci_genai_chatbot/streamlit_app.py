@@ -7,7 +7,7 @@ import os
 import time
 from typing import Dict, Any
 
-from .litellm_client import OCIGenAIChatBot, AVAILABLE_CHAT_MODELS, AVAILABLE_EMBEDDING_MODELS
+from oci_genai_chatbot.litellm_client import OCIGenAIChatBot, AVAILABLE_CHAT_MODELS, AVAILABLE_EMBEDDING_MODELS
 
 
 def init_session_state():
@@ -23,6 +23,7 @@ def init_session_state():
             "model": "cohere.command-r-plus",
             "temperature": 0.7,
             "max_tokens": 500,
+            "enable_streaming": True,
             "system_prompt": "",
             "compartment_id": os.getenv("OCI_COMPARTMENT_ID", "")
         }
@@ -59,6 +60,13 @@ def sidebar_config():
         help="Maximum number of tokens to generate"
     )
     
+    # Streaming toggle
+    enable_streaming = st.sidebar.checkbox(
+        "🔄 Enable Streaming",
+        value=st.session_state.config.get("enable_streaming", True),
+        help="Stream responses in real-time for faster perceived response time"
+    )
+    
     # System prompt
     system_prompt = st.sidebar.text_area(
         "System Prompt (optional)",
@@ -80,6 +88,7 @@ def sidebar_config():
         "model": model,
         "temperature": temperature,
         "max_tokens": max_tokens,
+        "enable_streaming": enable_streaming,
         "system_prompt": system_prompt,
         "compartment_id": compartment_id
     }
@@ -146,9 +155,11 @@ def main_chat_interface():
     
     # Display current model info
     if st.session_state.chatbot:
+        streaming_status = "🔄 Enabled" if st.session_state.config.get("enable_streaming", True) else "🚫 Disabled"
         st.info(f"💬 Using model: **{st.session_state.config['model']}** | "
                 f"🌡️ Temperature: **{st.session_state.config['temperature']}** | "
-                f"🎯 Max tokens: **{st.session_state.config['max_tokens']}**")
+                f"🎯 Max tokens: **{st.session_state.config['max_tokens']}** | "
+                f"Streaming: **{streaming_status}**")
     else:
         st.warning("⚠️ Please configure your settings in the sidebar to start chatting.")
         return
@@ -173,21 +184,48 @@ def main_chat_interface():
             
             # Generate assistant response
             with st.chat_message("assistant"):
-                with st.spinner("Thinking..."):
-                    try:
-                        system_prompt = st.session_state.config["system_prompt"] if st.session_state.config["system_prompt"] else None
-                        response = st.session_state.chatbot.chat(prompt, system_prompt)
-                        
-                        if response.startswith("Error:"):
-                            st.error(response)
-                        else:
-                            st.markdown(response)
-                            st.session_state.messages.append({"role": "assistant", "content": response})
+                try:
+                    system_prompt = st.session_state.config["system_prompt"] if st.session_state.config["system_prompt"] else None
+                    enable_streaming = st.session_state.config.get("enable_streaming", True)
                     
-                    except Exception as e:
-                        error_msg = f"Error: {str(e)}"
-                        st.error(error_msg)
-                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                    if enable_streaming:
+                        # Streaming response
+                        response_placeholder = st.empty()
+                        full_response = ""
+                        
+                        # Get streaming response
+                        stream_generator = st.session_state.chatbot.chat(prompt, system_prompt, stream=True)
+                        
+                        for chunk in stream_generator:
+                            if chunk.startswith("Error:"):
+                                st.error(chunk)
+                                st.session_state.messages.append({"role": "assistant", "content": chunk})
+                                break
+                            else:
+                                full_response += chunk
+                                # Update the placeholder with the accumulated response
+                                response_placeholder.markdown(full_response + "▎")  # Add cursor
+                        
+                        # Remove cursor and finalize
+                        if not full_response.startswith("Error:"):
+                            response_placeholder.markdown(full_response)
+                            st.session_state.messages.append({"role": "assistant", "content": full_response})
+                    
+                    else:
+                        # Non-streaming response
+                        with st.spinner("Thinking..."):
+                            response = st.session_state.chatbot.chat(prompt, system_prompt, stream=False)
+                            
+                            if response.startswith("Error:"):
+                                st.error(response)
+                            else:
+                                st.markdown(response)
+                                st.session_state.messages.append({"role": "assistant", "content": response})
+                
+                except Exception as e:
+                    error_msg = f"Error: {str(e)}"
+                    st.error(error_msg)
+                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
 
 
 def embedding_page():

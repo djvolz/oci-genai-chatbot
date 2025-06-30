@@ -5,11 +5,13 @@ A sample chatbot application demonstrating **Oracle Cloud Infrastructure (OCI) G
 ## ✨ Features
 
 - **💬 Interactive Chat Interface**: Both CLI and web-based (Streamlit) interfaces
+- **🚀 Real-time Streaming**: Stream responses in real-time for faster perceived response time
 - **🔍 Text Embeddings**: Generate embeddings using OCI GenAI embedding models
 - **🎯 Multiple Models**: Support for various OCI GenAI models (Cohere, Llama, etc.)
-- **⚙️ Configurable Parameters**: Adjust temperature, max tokens, and system prompts
+- **⚙️ Configurable Parameters**: Adjust temperature, max tokens, streaming, and system prompts
 - **📝 Conversation History**: Maintains context across chat sessions
 - **🎨 Rich UI**: Beautiful CLI with Rich library and modern Streamlit web interface
+- **🔄 Async Support**: Full async/await support for high-performance applications
 
 ## 🏗️ Architecture
 
@@ -92,8 +94,11 @@ chatbot-cli chat
 # With custom model and parameters
 chatbot-cli chat --model cohere.command-r-plus --temperature 0.8 --max-tokens 1000
 
-# With system prompt
-chatbot-cli chat --system-prompt "You are a helpful coding assistant"
+# With system prompt and streaming enabled
+chatbot-cli chat --system-prompt "You are a helpful coding assistant" --stream
+
+# Disable streaming for traditional response style
+chatbot-cli chat --no-stream
 ```
 
 Generate embeddings:
@@ -117,14 +122,18 @@ chatbot-cli models
 Launch the web application:
 
 ```bash
+# Using uv (recommended)
+uv run streamlit run src/oci_genai_chatbot/streamlit_app.py
+
+# Or using pip/python directly
 streamlit run src/oci_genai_chatbot/streamlit_app.py
 ```
 
-Then open your browser to `http://localhost:8501`
+Then open your browser to `http://localhost:8502` (or the port shown in the terminal)
 
 The web interface provides:
 
-- **💬 Chat Tab**: Interactive chatbot with conversation history
+- **💬 Chat Tab**: Interactive chatbot with conversation history and real-time streaming
 - **🔍 Embeddings Tab**: Generate and download text embeddings
 - **⚙️ Configuration Tab**: View OCI setup status and instructions
 
@@ -157,15 +166,31 @@ bot = OCIGenAIChatBot(
     compartment_id="ocid1.compartment.oc1..aaaaaaaa..."
 )
 
-# Chat
+# Basic chat
 response = bot.chat("Hello! How are you today?")
 print(response)
+
+# Streaming chat
+for chunk in bot.chat_stream("Tell me a story"):
+    print(chunk, end="", flush=True)
 
 # Chat with system prompt
 response = bot.chat(
     "Explain quantum computing", 
     system_prompt="You are a physics professor"
 )
+
+# Async chat
+import asyncio
+async def async_chat():
+    response = await bot.achat("Hello async world!")
+    print(response)
+    
+    # Async streaming
+    async for chunk in await bot.achat_stream("Tell me about AI"):
+        print(chunk, end="", flush=True)
+
+asyncio.run(async_chat())
 
 # Generate embeddings
 embedding = bot.embedding("Text to embed")
@@ -186,6 +211,31 @@ response = litellm.completion(
     max_tokens=500
 )
 
+# Streaming chat completion
+stream = litellm.completion(
+    model="oci_genai/cohere.command-r-plus",
+    messages=[{"role": "user", "content": "Tell me a story"}],
+    compartment_id="ocid1.compartment.oc1..aaaaaaaa...",
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+
+# Async streaming
+async def async_stream():
+    stream = await litellm.acompletion(
+        model="oci_genai/cohere.command-r-plus",
+        messages=[{"role": "user", "content": "Hello async!"}],
+        compartment_id="ocid1.compartment.oc1..aaaaaaaa...",
+        stream=True
+    )
+    
+    async for chunk in stream:
+        if chunk.choices[0].delta.content:
+            print(chunk.choices[0].delta.content, end="")
+
 # Embeddings
 embedding_response = litellm.embedding(
     model="oci_genai/cohere.embed-multilingual-v3.0",
@@ -199,16 +249,19 @@ embedding_response = litellm.embedding(
 ### CLI Features
 
 - **Rich Terminal UI**: Beautiful formatted output with colors and panels
-- **Interactive Chat**: Real-time conversation with typing indicators
+- **Real-time streaming**: Watch responses appear character by character
+- **Interactive Chat**: Live conversation with real-time streaming or traditional responses
 - **History Management**: View and reset conversation history
 - **Connection Testing**: Verify OCI GenAI connectivity
 - **Model Information**: Browse available models and their capabilities
+- **Flexible Modes**: Choose between streaming and non-streaming responses
 
 ### Streamlit Features
 
 - **Multi-page Interface**: Separate pages for chat, embeddings, and configuration
-- **Real-time Chat**: Interactive chat with message streaming
-- **Configuration Management**: Live settings adjustment
+- **Real-time Streaming**: Interactive chat with live message streaming
+- **Streaming Toggle**: Easy switching between streaming and traditional responses
+- **Configuration Management**: Live settings adjustment including streaming preferences
 - **Embedding Visualization**: Display embedding vectors and metadata
 - **Download Options**: Export embeddings as JSON files
 
@@ -233,11 +286,13 @@ This application demonstrates the **native OCI GenAI integration** added to Lite
 
 - **💬 Text Generation**: Chat completion with various models
 - **🔍 Embeddings**: Text embedding generation
-- **📡 Streaming**: Real-time response streaming (where supported)
+- **📡 Real-time Streaming**: Live response streaming with chunked delivery
+- **🔄 Async Operations**: Full async/await support for high-performance applications
 - **🔧 Function Calling**: Tool use capabilities (model-dependent)
 - **📋 System Messages**: System prompt support
 - **🌡️ Temperature Control**: Response randomness adjustment
 - **📏 Token Limits**: Output length control
+- **⚡ Performance**: Optimized streaming for faster perceived response times
 
 ## 🛠️ Troubleshooting
 
