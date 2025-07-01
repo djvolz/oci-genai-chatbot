@@ -264,7 +264,6 @@ Run without --demo to get real AI assistance!"""
             response = demo_responses.get(self.mode, demo_responses["suggest"])
             
             # Simulate streaming by printing character by character
-            import time
             for char in response:
                 console.print(char, end="")
                 time.sleep(0.01)  # Small delay to simulate streaming

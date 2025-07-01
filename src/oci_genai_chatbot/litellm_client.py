@@ -143,13 +143,14 @@ class OCIGenAIChatBot:
                 return bot_response
             
         except Exception as e:
+            error_message = f"Error: {str(e)}"
             if stream:
                 # Return error as a single chunk for streaming
                 def error_generator():
-                    yield f"Error: {str(e)}"
+                    yield error_message
                 return error_generator()
             else:
-                return f"Error: {str(e)}"
+                return error_message
     
     def _process_streaming_response(self, response_stream, user_message: str) -> Iterator[str]:
         """
@@ -256,13 +257,14 @@ class OCIGenAIChatBot:
                 return bot_response
             
         except Exception as e:
+            error_message = f"Error: {str(e)}"
             if stream:
                 # Return error as a single chunk for async streaming
                 async def async_error_generator():
-                    yield f"Error: {str(e)}"
+                    yield error_message
                 return async_error_generator()
             else:
-                return f"Error: {str(e)}"
+                return error_message
     
     async def _process_async_streaming_response(self, response_stream, user_message: str) -> AsyncIterator[str]:
         """
